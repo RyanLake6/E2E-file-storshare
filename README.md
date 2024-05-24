@@ -40,15 +40,17 @@ The following command will give CLI tool usage and full command help list
 ./E2E-file-storshare.exe
 ```
 
-### Commands:
+## Commands:
 
 ```bash
 # Login to Nextcloud with specified credentials
-./E2E-file-storshare.exe login \
-    --base-url https://<your-nextcloud-instance.com> \
-    --username ncadmin \
-    --password <yourpassword>
+./E2E-file-storshare.exe login
 ```
+
+### Arguments
+
+- --base-url https://<your-nextcloud-instance.com> (required): The base url for the next cloud instance running.
+- --debug, -d (optional): If supplied, returns debugging information.
 
 ## Developer Notes:
 
