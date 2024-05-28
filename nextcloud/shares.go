@@ -227,28 +227,45 @@ func (share *NextcloudShare) ListShares(token string, debug bool, allDetails boo
 	return nil
 }
 
-func (share *NextcloudShare) DeleteShare(shareID string, token string) error {
+func (share *NextcloudShare) DeleteShare(shareID string, token string, debug bool) (string, error) {
 	req, err := http.NewRequest("DELETE", share.BaseURL+"/ocs/v2.php/apps/files_sharing/api/v1/shares/"+shareID, nil)
 	if err != nil {
-		return err
+		return "", err
 	}
 	req.Header.Set("OCS-APIRequest", "true")
 
 	if token == "" {
 		fmt.Println("No set token, please login")
-		return fmt.Errorf("no login token set")
+		return "", fmt.Errorf("no login token set")
 	}
 
 	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := share.Client.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to delete share, status code: %d", resp.StatusCode)
+		return "", fmt.Errorf("failed to delete share, status code: %d", resp.StatusCode)
 	}
 
-	return nil
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var listShareResponse ShareResponse
+	err = xml.Unmarshal([]byte(string(body)), &listShareResponse)
+	if err != nil {
+		return "", err
+	}
+
+	if debug {
+		fmt.Println("share response headers: ", listShareResponse)
+		fmt.Println("full response: ", string(body))
+		fmt.Println("Token: ", token)
+		fmt.Println("Response status code: ", resp.StatusCode)
+	}
+
+	return listShareResponse.Meta.Message, nil
 }

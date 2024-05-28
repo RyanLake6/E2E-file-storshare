@@ -119,3 +119,15 @@ The session token will be stored locally in a config file on your device and is 
 
 - `--debug`, `-d` (optional): If supplied, returns debugging information.
 - `--all-details`, `-a` (optional): If supplied, returns all share information.
+
+### Delete-Share
+
+```bash
+# List all Nextcloud files and folders
+./E2E-file-storshare.exe delete-share --share-id <share-id-here>
+```
+
+#### Flags
+
+- `--share-id` (required): The id of the share you wish to delete
+- `--debug`, `-d` (optional): If supplied, returns debugging information.
