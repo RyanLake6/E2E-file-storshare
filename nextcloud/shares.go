@@ -1,7 +1,6 @@
 package nextcloud
 
 import (
-	"bytes"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -22,6 +21,12 @@ type NextcloudShare struct {
 	Client  *http.Client
 }
 
+type ShareResponseList struct {
+	XMLName xml.Name `xml:"ocs"`
+	Meta    Meta     `xml:"meta"`
+	Data    DataList `xml:"data"`
+}
+
 type ShareResponse struct {
 	XMLName xml.Name `xml:"ocs"`
 	Meta    Meta     `xml:"meta"`
@@ -32,6 +37,10 @@ type Meta struct {
 	Status     string `xml:"status"`
 	StatusCode int    `xml:"statuscode"`
 	Message    string `xml:"message"`
+}
+
+type DataList struct {
+	Elements []Data `xml:"element"`
 }
 
 type Data struct {
@@ -127,7 +136,7 @@ func (share *NextcloudShare) CreateShare(remotePath string, shareType ShareType,
 	return shareResponse.Data.URL, nil
 }
 
-func (share *NextcloudShare) ListShares(token string) error {
+func (share *NextcloudShare) ListShares(token string, debug bool, allDetails bool) error {
 	req, err := http.NewRequest("GET", share.BaseURL+"/ocs/v2.php/apps/files_sharing/api/v1/shares", nil)
 	if err != nil {
 		return err
@@ -150,13 +159,71 @@ func (share *NextcloudShare) ListShares(token string) error {
 		return fmt.Errorf("failed to list shares, status code: %d", resp.StatusCode)
 	}
 
-	var body bytes.Buffer
-	_, err = body.ReadFrom(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	fmt.Println(body.String())
+	var listShareResponse ShareResponseList
+	err = xml.Unmarshal([]byte(string(body)), &listShareResponse)
+	if err != nil {
+		return err
+	}
 
+	if debug {
+		fmt.Println("share response headers: ", listShareResponse)
+		fmt.Println("full response: ", string(body))
+		fmt.Println("Token: ", token)
+		fmt.Println("Response status code: ", resp.StatusCode)
+	}
+
+	// Printing the file information
+	for _, response := range listShareResponse.Data.Elements {
+		fmt.Printf("ID: %d\n", response.ID)
+		fmt.Printf("displayname_owner: %s\n", response.DisplayNameOwner)
+		fmt.Printf("URL: %s\n", response.URL)
+
+		if allDetails {
+			fmt.Printf("ID: %d\n", response.ID)
+			fmt.Printf("ShareType: %d\n", response.ShareType)
+			fmt.Printf("UIDOwner: %s\n", response.UIDOwner)
+			fmt.Printf("DisplayNameOwner: %s\n", response.DisplayNameOwner)
+			fmt.Printf("Permissions: %d\n", response.Permissions)
+			fmt.Printf("CanEdit: %d\n", response.CanEdit)
+			fmt.Printf("CanDelete: %d\n", response.CanDelete)
+			fmt.Printf("STime: %d\n", response.STime)
+			fmt.Printf("Parent: %s\n", response.Parent)
+			fmt.Printf("Expiration: %s\n", response.Expiration)
+			fmt.Printf("Token: %s\n", response.Token)
+			fmt.Printf("UIDFileOwner: %s\n", response.UIDFileOwner)
+			fmt.Printf("Note: %s\n", response.Note)
+			fmt.Printf("Label: %s\n", response.Label)
+			fmt.Printf("DisplayNameFileOwner: %s\n", response.DisplayNameFileOwner)
+			fmt.Printf("Path: %s\n", response.Path)
+			fmt.Printf("ItemType: %s\n", response.ItemType)
+			fmt.Printf("ItemPermissions: %d\n", response.ItemPermissions)
+			fmt.Printf("MimeType: %s\n", response.MimeType)
+			fmt.Printf("HasPreview: %s\n", response.HasPreview)
+			fmt.Printf("StorageID: %s\n", response.StorageID)
+			fmt.Printf("Storage: %d\n", response.Storage)
+			fmt.Printf("ItemSource: %d\n", response.ItemSource)
+			fmt.Printf("FileSource: %d\n", response.FileSource)
+			fmt.Printf("FileParent: %d\n", response.FileParent)
+			fmt.Printf("FileTarget: %s\n", response.FileTarget)
+			fmt.Printf("ItemSize: %d\n", response.ItemSize)
+			fmt.Printf("ItemMTime: %d\n", response.ItemMTime)
+			fmt.Printf("ShareWith: %s\n", response.ShareWith)
+			fmt.Printf("ShareWithDisplayName: %s\n", response.ShareWithDisplayName)
+			fmt.Printf("Password: %s\n", response.Password)
+			fmt.Printf("SendPasswordByTalk: %s\n", response.SendPasswordByTalk)
+			fmt.Printf("URL: %s\n", response.URL)
+			fmt.Printf("MailSend: %d\n", response.MailSend)
+			fmt.Printf("HideDownload: %d\n", response.HideDownload)
+			fmt.Printf("Attributes: %s\n", response.Attributes)
+		}
+
+		fmt.Println("---")
+	}
+	
 	return nil
 }
 
