@@ -12,6 +12,7 @@ import (
 var (
 	remotePath string
 	debugList  bool
+	allDetails bool
 )
 
 var listCmd = &cobra.Command{
@@ -23,7 +24,7 @@ var listCmd = &cobra.Command{
 		files := nextcloud.NewNextcloudFiles(auth.BaseURL, auth.Client)
 
 		config.LoadConfig()
-		err := files.ListFiles(remotePath, config.GetToken())
+		err := files.ListFiles(remotePath, config.GetToken(), allDetails)
 		if err != nil {
 			fmt.Println("Error:", err)
 		}
@@ -39,5 +40,6 @@ var listCmd = &cobra.Command{
 func init() {
 	listCmd.Flags().StringVar(&remotePath, "remote-path", "", "Remote path to list files")
 	listCmd.Flags().BoolVarP(&debugList, "debug", "d", false, "Setting debug mode") 
+	listCmd.Flags().BoolVarP(&allDetails, "all-details", "a", false, "Specifying if all related should be shown") 
 	rootCmd.AddCommand(listCmd)
 }

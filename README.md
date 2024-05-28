@@ -40,17 +40,7 @@ The following command will give CLI tool usage and full command help list
 ./E2E-file-storshare.exe
 ```
 
-## Commands:
-
-```bash
-# Login to Nextcloud with specified credentials
-./E2E-file-storshare.exe login
-```
-
-### Arguments
-
-- --base-url https://<your-nextcloud-instance.com> (required): The base url for the next cloud instance running.
-- --debug, -d (optional): If supplied, returns debugging information.
+**To view all commands see [here](#commands)**
 
 ## Developer Notes:
 
@@ -77,3 +67,30 @@ Don't worry the code doesn't take in any usernames or passwords utilizing nextcl
 The session token will be stored locally in a config file on your device and is only valid for 20 minutes.
 
 **NOTE**: On windows the file is stored at C:/Users/\<user>/.e2e-file-storshare-cli and this may not work on Linux or Mac. To debug with your OS please look within config/config.go to change where this is stored
+
+## Commands:
+
+### Login
+
+```bash
+# Login to Nextcloud with specified credentials
+./E2E-file-storshare.exe login --base-url https://<your-nextcloud-instance.com>
+```
+
+#### Flags
+
+- `--base-url` https://<your-nextcloud-instance.com> (required): The base url for the Nextcloud instance running.
+- `--debug`, `-d` (optional): If supplied, returns debugging information.
+
+### List
+
+```bash
+# List all Nextcloud files and folders
+./E2E-file-storshare.exe list --remote-path <path-here>
+```
+
+#### Flags
+
+- `--remote-path` /\<folder-location> (required): The remote location you wish to view the files from (use `/` for the root folder).
+- `--debug`, `-d` (optional): If supplied, returns debugging information.
+- `--all-details`, `-a` (optional): If supplied, returns all file information.
