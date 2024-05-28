@@ -94,3 +94,16 @@ The session token will be stored locally in a config file on your device and is 
 - `--remote-path` /\<folder-location> (required): The remote location you wish to view the files from (use `/` for the root folder).
 - `--debug`, `-d` (optional): If supplied, returns debugging information.
 - `--all-details`, `-a` (optional): If supplied, returns all file information.
+
+### Share
+
+```bash
+# List all Nextcloud files and folders
+./E2E-file-storshare.exe share --remote-path <path-here> --permissions <permission-int-here>
+```
+
+#### Flags
+
+- `--remote-path` /\<folder-location> (required): The remote folder or file you wish to share
+- `--permissions` \<integer> (required): 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+- `--debug`, `-d` (optional): If supplied, returns debugging information.
