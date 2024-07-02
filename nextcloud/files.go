@@ -147,11 +147,18 @@ func (files *NextcloudFiles) UploadFile(localPath, remotePath, token string) err
 	return nil
 }
 
-func (files *NextcloudFiles) DownloadFile(remotePath, localPath string) error {
+func (files *NextcloudFiles) DownloadFile(remotePath, localPath, token string) error {
 	req, err := http.NewRequest("GET", files.BaseURL+"/remote.php/webdav/"+remotePath, nil)
 	if err != nil {
 		return err
 	}
+
+	if token == "" {
+		fmt.Println("No set token, please login")
+		return fmt.Errorf("no login token set")
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := files.Auth.Do(req)
 	if err != nil {
 		return err
@@ -171,7 +178,12 @@ func (files *NextcloudFiles) DownloadFile(remotePath, localPath string) error {
 		}
 		fmt.Println("File downloaded successfully.")
 	} else {
-		return fmt.Errorf("failed to download file, status code: %d", resp.StatusCode)
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Failed to read response body: %v\n", err)
+		}
+		bodyString := string(bodyBytes)
+		return fmt.Errorf("failed to download file, status code: %d, body: %s", resp.StatusCode, bodyString)
 	}
 	return nil
 }

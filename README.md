@@ -143,3 +143,14 @@ The session token will be stored locally in a config file on your device and is 
 
 - `--remote-path` (required): remote path to place the local file to in nextcloud
 - `--local-path`, (required): local path of the file to upload (absolute path is easiest to avoid issues)
+
+### Download
+
+```bash
+# Download a remote file from nextcloud
+.\E2E-file-storshare.exe download --local-path "C:\Users\Ryan Lake\Northeastern\senior\test.txt" --remote-path /nextcloud/test.txt
+```
+
+#### Flags
+- `--remote-path` (required): remote path to download the nextcloud file
+- `--local-path`, (required): local path of where to place downloaded file (absolute path is easiest to avoid issues)
