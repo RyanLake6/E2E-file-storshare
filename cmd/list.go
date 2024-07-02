@@ -9,37 +9,43 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	remotePath string
-	debugList  bool
-	allDetails bool
-)
+func listCmd() *cobra.Command {
+	var (
+		remotePath string
+		debug  bool
+		allDetails bool
+	)
 
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List files in a Nextcloud directory.",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.LoadConfig()
-		auth := nextcloud.NewNextcloudAuth(config.GetBaseURL())
-		files := nextcloud.NewNextcloudFiles(auth.BaseURL, auth.Client)
+	var listCmd = &cobra.Command{
+		Use:   "list",
+		Short: "List files in a Nextcloud directory.",
+		Run: func(cmd *cobra.Command, args []string) {
+			config.LoadConfig()
+			auth := nextcloud.NewNextcloudAuth(config.GetBaseURL())
+			files := nextcloud.NewNextcloudFiles(auth.BaseURL, auth.Client)
+	
+			config.LoadConfig()
+			err := files.ListFiles(remotePath, config.GetToken(), allDetails)
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
+	
+			if debug {
+				fmt.Println("remote path: ", remotePath)
+				fmt.Println("token is: ", config.GetToken())
+				fmt.Println("base url is: ", config.GetBaseURL())
+			}
+		},
+	}
 
-		config.LoadConfig()
-		err := files.ListFiles(remotePath, config.GetToken(), allDetails)
-		if err != nil {
-			fmt.Println("Error:", err)
-		}
+	listCmd.Flags().StringVar(&remotePath, "remote-path", "", "Remote path to list files")
+	listCmd.Flags().BoolVarP(&debug, "debug", "d", false, "Setting debug mode")
+	listCmd.Flags().BoolVarP(&allDetails, "all-details", "a", false, "Specifying if all related should be shown")
 
-		if debugList {
-			fmt.Println("remote path: ", remotePath)
-			fmt.Println("token is: ", config.GetToken())
-			fmt.Println("base url is: ", config.GetBaseURL())
-		}
-	},
+	return listCmd
 }
 
+
 func init() {
-	listCmd.Flags().StringVar(&remotePath, "remote-path", "", "Remote path to list files")
-	listCmd.Flags().BoolVarP(&debugList, "debug", "d", false, "Setting debug mode") 
-	listCmd.Flags().BoolVarP(&allDetails, "all-details", "a", false, "Specifying if all related should be shown") 
-	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(listCmd())
 }

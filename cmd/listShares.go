@@ -8,27 +8,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	debugListShare bool
-	allDetailsShare bool
-)
+func listSharesCmd() *cobra.Command {
+	var (
+		debug bool
+		allDetails bool
+	)
 
-var listSharesCmd = &cobra.Command{
-	Use:   "list-shares",
-	Short: "List all shares in Nextcloud.",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.LoadConfig()
-		auth := nextcloud.NewNextcloudAuth(config.GetBaseURL())
-		share := nextcloud.NewNextcloudShare(auth.BaseURL, auth.Client)
-		err := share.ListShares(config.GetToken(), debugListShare, allDetailsShare)
-		if err != nil {
-			fmt.Println("Error:", err)
-		}
-	},
+	var listSharesCmd = &cobra.Command{
+		Use:   "list-shares",
+		Short: "List all shares in Nextcloud.",
+		Run: func(cmd *cobra.Command, args []string) {
+			config.LoadConfig()
+			auth := nextcloud.NewNextcloudAuth(config.GetBaseURL())
+			share := nextcloud.NewNextcloudShare(auth.BaseURL, auth.Client)
+			err := share.ListShares(config.GetToken(), debug, allDetails)
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
+		},
+	}
+
+	listSharesCmd.Flags().BoolVarP(&debug, "debug", "d", false, "Setting debug mode") 
+	listSharesCmd.Flags().BoolVarP(&allDetails, "all-details", "a", false, "Returning all shares details") 
+
+	return listSharesCmd
 }
 
+
+
 func init() {
-	listSharesCmd.Flags().BoolVarP(&debugListShare, "debug", "d", false, "Setting debug mode") 
-	listSharesCmd.Flags().BoolVarP(&allDetailsShare, "all-details", "a", false, "Returning all shares details") 
-	rootCmd.AddCommand(listSharesCmd)
+	
+	rootCmd.AddCommand(listSharesCmd())
 }

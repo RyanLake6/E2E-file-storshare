@@ -8,29 +8,39 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	shareID          string
-	debugDeleteShare bool
-)
 
-var deleteShareCmd = &cobra.Command{
-	Use:   "delete-share",
-	Short: "Delete a share link in Nextcloud.",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.LoadConfig()
-		auth := nextcloud.NewNextcloudAuth(config.GetBaseURL())
-		share := nextcloud.NewNextcloudShare(auth.BaseURL, auth.Client)
-		msg, err := share.DeleteShare(shareID, config.GetToken(), debugDeleteShare)
-		if err != nil {
-			fmt.Println("Error:", err)
-		} else {
-			fmt.Printf("Share link %s deleted. Message: %s", shareID, msg)
-		}
-	},
+
+func deleteShareCmd() *cobra.Command {
+	var (
+		shareID  string
+		debug    bool
+	)
+
+	var deleteShareCmd = &cobra.Command{
+		Use:   "delete-share",
+		Short: "Delete a share link in Nextcloud.",
+		Run: func(cmd *cobra.Command, args []string) {
+			config.LoadConfig()
+			auth := nextcloud.NewNextcloudAuth(config.GetBaseURL())
+			share := nextcloud.NewNextcloudShare(auth.BaseURL, auth.Client)
+			msg, err := share.DeleteShare(shareID, config.GetToken(), debug)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Printf("Share link %s deleted. Message: %s", shareID, msg)
+			}
+		},
+	}
+
+	deleteShareCmd.Flags().StringVar(&shareID, "share-id", "", "ID of the share to delete")
+	deleteShareCmd.Flags().BoolVarP(&debug, "debug", "d", false, "Setting debug mode") 
+
+	return deleteShareCmd
 }
 
+
+
 func init() {
-	deleteShareCmd.Flags().StringVar(&shareID, "share-id", "", "ID of the share to delete")
-	deleteShareCmd.Flags().BoolVarP(&debugDeleteShare, "debug", "d", false, "Setting debug mode") 
-	rootCmd.AddCommand(deleteShareCmd)
+	
+	rootCmd.AddCommand(deleteShareCmd())
 }

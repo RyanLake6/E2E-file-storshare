@@ -98,7 +98,7 @@ The session token will be stored locally in a config file on your device and is 
 ### Share
 
 ```bash
-# List all Nextcloud files and folders
+# Create a share
 ./E2E-file-storshare.exe share --remote-path <path-here> --permissions <permission-int-here>
 ```
 
@@ -111,7 +111,7 @@ The session token will be stored locally in a config file on your device and is 
 ### List-Shares
 
 ```bash
-# List all Nextcloud files and folders
+# List all Nextcloud shares
 ./E2E-file-storshare.exe list-shares
 ```
 
@@ -123,7 +123,7 @@ The session token will be stored locally in a config file on your device and is 
 ### Delete-Share
 
 ```bash
-# List all Nextcloud files and folders
+# Delete the specified share from id
 ./E2E-file-storshare.exe delete-share --share-id <share-id-here>
 ```
 
