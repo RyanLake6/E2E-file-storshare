@@ -131,3 +131,15 @@ The session token will be stored locally in a config file on your device and is 
 
 - `--share-id` (required): The id of the share you wish to delete
 - `--debug`, `-d` (optional): If supplied, returns debugging information.
+
+### Upload
+
+```bash
+# Upload the local file to nextcloud
+.\E2E-file-storshare.exe upload --remote-path /Documents/notes.txt --local-path "C:\Users\username\MyDocuments\notes"
+```
+
+#### Flags
+
+- `--remote-path` (required): remote path to place the local file to in nextcloud
+- `--local-path`, (required): local path of the file to upload (absolute path is easiest to avoid issues)

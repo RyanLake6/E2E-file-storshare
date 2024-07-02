@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -106,7 +107,7 @@ func (files *NextcloudFiles) ListFiles(path string, token string, allDetails boo
 	return nil
 }
 
-func (files *NextcloudFiles) UploadFile(localPath, remotePath string) error {
+func (files *NextcloudFiles) UploadFile(localPath, remotePath, token string) error {
 	file, err := os.Open(localPath)
 	if err != nil {
 		return err
@@ -117,6 +118,16 @@ func (files *NextcloudFiles) UploadFile(localPath, remotePath string) error {
 	if err != nil {
 		return err
 	}
+
+	// Set Content-Type header (adjust as needed)
+	req.Header.Set("Content-Type", "application/octet-stream")
+
+	if token == "" {
+		fmt.Println("No set token, please login")
+		return fmt.Errorf("no login token set")
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := files.Auth.Do(req)
 	if err != nil {
 		return err
@@ -126,7 +137,12 @@ func (files *NextcloudFiles) UploadFile(localPath, remotePath string) error {
 	if resp.StatusCode == http.StatusCreated {
 		fmt.Println("File uploaded successfully.")
 	} else {
-		return fmt.Errorf("failed to upload file, status code: %d", resp.StatusCode)
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Failed to read response body: %v\n", err)
+		}
+		bodyString := string(bodyBytes)
+		return fmt.Errorf("failed to upload file, status code: %d, body: %s", resp.StatusCode, bodyString)
 	}
 	return nil
 }
