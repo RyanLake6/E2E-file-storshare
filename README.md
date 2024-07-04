@@ -26,6 +26,8 @@ Navigate to the directory where the script is located.
 cd E2E-file-storshare
 ```
 
+Input environment variables into .env file mocked from .env.example file for email capabilities. (Not necessary for all capabilities of this repo)
+
 Build the repo to make an executable file to run commands
 
 ```bash
@@ -99,7 +101,7 @@ The session token will be stored locally in a config file on your device and is 
 
 ```bash
 # Create a share
-./E2E-file-storshare.exe share --remote-path <path-here> --permissions <permission-int-here>
+./E2E-file-storshare.exe share --remote-path <path-here> --permissions <permission-int-here> --send-email --signature <yourname> --email-recipient <email-here>
 ```
 
 #### Flags
@@ -107,6 +109,9 @@ The session token will be stored locally in a config file on your device and is 
 - `--remote-path` /\<folder-location> (required): The remote folder or file you wish to share
 - `--permissions` \<integer> (required): 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
 - `--debug`, `-d` (optional): If supplied, returns debugging information.
+- `--send-email`, `-e` (optional): If supplied, it will try to send an email of the new share link
+- `--signature`, `-s` (optional): If supplied, will customize the signature at the end of your email
+- `--email-recipient`, `r` (optional): If supplied, the email you wish to send to
 
 ### List-Shares
 
