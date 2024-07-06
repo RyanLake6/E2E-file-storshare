@@ -103,7 +103,10 @@ func (share *NextcloudShare) CreateShare(remotePath string, shareType ShareType,
 		return "", fmt.Errorf("no login token set")
 	}
 
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("OCS-APIRequest", "true")
 	req.Header.Set("Authorization", "Bearer "+token)
+	
 	resp, err := share.Client.Do(req)
 	if err != nil {
 		return "", err

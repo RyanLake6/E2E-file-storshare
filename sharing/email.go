@@ -10,7 +10,7 @@ import (
 )
 
 func SendEmail(recipient, subject, plainTextContent, htmlContent string) error {
-	from := mail.NewEmail("user", os.Getenv("SENDGRID_FROM_EMAIL"))
+	from := mail.NewEmail("Nextcloud", os.Getenv("SENDGRID_FROM_EMAIL"))
 	to := mail.NewEmail("Recipient", recipient)
 	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 
